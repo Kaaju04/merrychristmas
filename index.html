@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merry Christmas Arya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #d63031;
+            --dark-red: #a22a2a;
+            --romantic-pink: #fd79a8; /* The new pink tone for the front */
+            --gold: #f1c40f;
+            --cream: #fff5f5;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            color: var(--white);
+            touch-action: manipulation; /* Prevents mobile tap delay */
+        }
+
+        /* Interaction Layer for Autoplay */
+        #interaction-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        /* Snowfall */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            user-select: none;
+            z-index: 1;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(105vh) translateX(30px); }
+        }
+
+        /* Main Wrapper */
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            transition: opacity 0.8s ease;
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--cream);
+            text-shadow: 0 0 20px rgba(214, 48, 49, 0.8);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--primary-red); }
+            to { text-shadow: 0 0 30px var(--romantic-pink); }
+        }
+
+        /* Envelope Styling */
+        .envelope-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark-red); /* Back of the envelope */
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            z-index: 1;
+        }
+
+        /* Front Covers (The Pink Parts) */
+        .front-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 4; /* Sits in front of the letter */
+            pointer-events: none;
+        }
+
+        /* Bottom flap of the cover */
+        .front-cover::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 100px solid var(--romantic-pink);
+        }
+
+        /* Left flap of the cover */
+        .front-cover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            border-left: 150px solid #e84393; /* Slightly darker pink for depth */
+        }
+
+        .right-cover-flap {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            border-right: 150px solid #e84393;
+            z-index: 4;
+        }
+
+        /* Top Flap */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid var(--primary-red);
+            transform-origin: top;
+            transition: transform 0.6s ease, z-index 0.6s;
+            z-index: 5; /* Starts on top */
+        }
+
+        /* The Letter */
+        .letter {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 280px;
+            height: 180px;
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            z-index: 2; /* Behind the front covers */
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .letter-content {
+            font-family: 'Dancing Script', cursive;
+            color: #2d3436;
+            font-size: 1.1rem;
+            text-align: center;
+            line-height: 1.4;
+            width: 100%;
+        }
+
+        /* States */
+        .envelope-container.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1; /* Move behind when open */
+        }
+
+        .envelope-container.open .letter {
+            transform: translateY(-180px) scale(1.1); /* Slides up even more */
+            z-index: 6; /* Pops in front of everything when raised */
+            height: 250px;
+        }
+
+        /* Button Styling */
+        .btn {
+            margin-top: 40px;
+            padding: 15px 40px;
+            background: var(--gold);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 20;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(241, 196, 15, 0.6);
+        }
+
+        /* Final Scene */
+        #final-scene {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            z-index: 100;
+        }
+
+        .santa {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        .message-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .message-box h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .personal-sign {
+            margin-top: 20px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        /* Music Controls */
+        .music-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        .music-btn:hover { background: rgba(255,255,255,0.3); }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+
+        .heart {
+            position: absolute;
+            pointer-events: none;
+            animation: floatHeart 3s ease-out forwards;
+            z-index: 50;
+        }
+
+        @keyframes floatHeart {
+            0% { transform: translate(0, 0) scale(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; }
+        }
+
+        .hidden { display: none; }
+        .fade-out { opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Interaction layer to unlock audio context -->
+    <div id="interaction-layer"></div>
+
+    <!-- Audio - playsinline is strictly required for iPhones -->
+    <audio id="bg-music" loop playsinline>
+        <source src="All I want for Christmas is you (1 minute version).mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="snow-container"></div>
+
+    <div class="wrapper" id="main-content">
+        <h1 class="title">Merry Christmas My Baby</h1>
+
+        <div class="envelope-container" id="envelope-trigger">
+            <!-- Top Flap -->
+            <div class="flap"></div>
+            
+            <!-- Main Envelope Body (The Back) -->
+            <div class="envelope">
+                
+                <!-- The Letter (Hidden behind front-cover) -->
+                <div class="letter">
+                    <div class="letter-content">
+                        My Dearest Arya,<br><br>
+                        This Christmas, I realized that the most beautiful gift isn't wrapped in paper, but in your smile. Meeting you was my miracle.<br><br>
+                        You are the light of my life.<br>
+                        <strong>iloveyouarya my baby</strong>
+                    </div>
+                </div>
+
+                <!-- Front Covers (Dual Tone - Pink) -->
+                <div class="front-cover"></div>
+                <div class="right-cover-flap"></div>
+            </div>
+        </div>
+
+        <button class="btn" id="main-btn">Open My Heart</button>
+    </div>
+
+    <div id="final-scene">
+        <div class="santa">🎅🎄</div>
+        <div class="message-box">
+            <h2>Merry Christmas!</h2>
+            <p>I hope your day is as magical and beautiful as you are. You make every moment feel like a holiday.</p>
+            <div class="personal-sign">iloveyouarya my baby</div>
+        </div>
+        <button class="btn" onclick="location.reload()" style="margin-top: 20px;">Relive the Magic</button>
+    </div>
+
+    <div class="music-btn" id="music-toggle">🔇</div>
+
+    <script>
+        const audio = document.getElementById('bg-music');
+        const musicToggle = document.getElementById('music-toggle');
+        const mainBtn = document.getElementById('main-btn');
+        const envelopeTrigger = document.getElementById('envelope-trigger');
+        const mainContent = document.getElementById('main-content');
+        const finalScene = document.getElementById('final-scene');
+        const interactionLayer = document.getElementById('interaction-layer');
+        let isMusicPlaying = false;
+        let step = 0;
+
+        // Function to handle the first interaction (works on desktop and mobile)
+        const startExperience = () => {
+            if (!isMusicPlaying) {
+                audio.play().catch(e => console.log("Autoplay blocked, waiting for more interaction"));
+                isMusicPlaying = true;
+                musicToggle.innerText = '🎵';
+            }
+            interactionLayer.classList.add('hidden');
+        };
+
+        // Attach both click and touchstart for seamless response on mobile
+        interactionLayer.addEventListener('click', startExperience);
+        interactionLayer.addEventListener('touchstart', startExperience);
+
+        // Snow Logic
+        function createSnow() {
+            const snow = document.createElement('div');
+            snow.className = 'snowflake';
+            snow.innerHTML = '❄';
+            snow.style.left = Math.random() * 100 + 'vw';
+            snow.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            snow.style.opacity = Math.random();
+            document.getElementById('snow-container').appendChild(snow);
+            setTimeout(() => snow.remove(), 5000);
+        }
+        setInterval(createSnow, 100);
+
+        // Music Toggle
+        musicToggle.onclick = (e) => {
+            e.stopPropagation();
+            if (isMusicPlaying) {
+                audio.pause();
+                musicToggle.innerText = '🔇';
+            } else {
+                audio.play();
+                musicToggle.innerText = '🎵';
+            }
+            isMusicPlaying = !isMusicPlaying;
+        };
+
+        // Button Logic
+        mainBtn.onclick = () => {
+            if (!isMusicPlaying) {
+                audio.play().catch(() => {});
+                isMusicPlaying = true;
+                musicToggle.innerText = '🎵';
+            }
+
+            if (step === 0) {
+                envelopeTrigger.classList.add('open');
+                mainBtn.innerText = 'Next Surprise...';
+                
+                for(let i=0; i<15; i++) {
+                    setTimeout(createHeart, i * 100);
+                }
+                step = 1;
+            } else {
+                mainContent.classList.add('fade-out');
+                setTimeout(() => {
+                    mainContent.classList.add('hidden');
+                    finalScene.style.display = 'block';
+                    finalScene.animate([{opacity: 0}, {opacity: 1}], {duration: 1000, fill: 'forwards'});
+                }, 800);
+            }
+        };
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = '50%';
+            heart.style.top = '50%';
+            heart.style.setProperty('--tx', (Math.random() * 400 - 200) + 'px');
+            heart.style.setProperty('--ty', (Math.random() * -400 - 100) + 'px');
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 3000);
+        }
+
+        envelopeTrigger.onclick = () => {
+            if (step === 0) mainBtn.click();
+        };
+    </script>
+</body>
+</html>
